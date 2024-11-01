@@ -1,15 +1,16 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
-import { login } from "@/lib/actions";
+import { getActiveWorkspace, login } from "@/lib/actions";
 import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -17,7 +18,7 @@ const LoginSchema = z.object({
 });
 
 const Login = () => {
-  const { handleSubmit, register } = useForm({
+  const { handleSubmit, register, formState } = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
@@ -28,18 +29,23 @@ const Login = () => {
   const [show, setShow] = React.useState(false);
 
   const handleLogin = handleSubmit(async (values) => {
-    const { error, data } = await login(values);
-    if (error) {
-      toast.error(error);
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+    });
+    console.log({ res });
+    if (!res?.ok && res?.error) {
+      toast.error(res?.error);
       return;
     }
-    if (!data?.workspaces) {
-      toast.success("LoggedIn successfully");
+    const activeWorkspace = await getActiveWorkspace();
+    toast.success("LoggedIn successfully");
+    if (!activeWorkspace) {
       router.push("/workspace");
       return;
     }
-    toast.success("LoggedIn successfully");
-    router.push(`/w/${data.workspaces[0].id}`);
+    router.push(`/w/${activeWorkspace.id}`);
   });
 
   return (
@@ -80,6 +86,9 @@ const Login = () => {
           type="submit"
           className="mt-2 rounded-lg bg-[#6a5ed9] px-4 py-2  text-white  hover:bg-[#564ac6]"
         >
+          {formState?.isSubmitting && (
+            <Loader className="size-4 animate-spin opacity-80" />
+          )}
           <span className="font-medium ">Login</span>
         </button>
       </form>
@@ -92,7 +101,7 @@ const Login = () => {
         <Button
           className="w-full"
           variant={"outline"}
-          // onClick={async () => signIn("github")}
+          onClick={async () => signIn("github")}
         >
           <Image
             src={"/github.svg"}
@@ -108,7 +117,7 @@ const Login = () => {
         <Button
           variant={"outline"}
           className="w-full "
-          // onClick={async () => signIn("g oogle")}
+          onClick={async () => signIn("google")}
         >
           <Image
             src={"/google.svg"}

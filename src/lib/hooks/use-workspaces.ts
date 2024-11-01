@@ -4,7 +4,8 @@ import { useQuery } from "react-query";
 import { getActiveWorkspace } from "../actions";
 import { Workspace } from "../db/schema";
 import { getUserWorkspaces } from "../db/workspaces";
-import { useUser } from "../user-provider";
+// import { useUser } from "../user-provider";
+import { useSession } from "next-auth/react";
 
 type GetWorkspacesResponse = {
   workspaces: Workspace[];
@@ -12,15 +13,16 @@ type GetWorkspacesResponse = {
 };
 
 export const useWorkspaces = () => {
-  const { user } = useUser();
+  const { data: user } = useSession();
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(
     null
   );
   const { data, isLoading, refetch } = useQuery(
-    ["get-workspaces", user?.id!],
-    cache(async () => await getUserWorkspaces(user?.id!)),
+    ["get-workspaces", user?.user?.id!],
+    cache(async () => await getUserWorkspaces(user?.user?.id!)),
     { enabled: false }
   );
+  console.log({ data });
   useEffect(() => {
     refetch();
     (async () => {

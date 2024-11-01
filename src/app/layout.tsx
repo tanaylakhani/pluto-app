@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.className}`}>
       <body className="h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" defaultTheme="system">
           <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
         </ThemeProvider>
       </body>

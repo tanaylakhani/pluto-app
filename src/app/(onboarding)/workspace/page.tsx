@@ -31,7 +31,11 @@ const Page: FC<PageProps> = ({ params }) => {
               href={`/w/${workspace?.id}`}
               className="cursor-pointer"
             >
-              <div className="w-full rounded-lg border border-neutral-300/60 p-3 dark:border-lightGray/10 ">
+              <div
+                key={i}
+                onClick={() => handleWorkspaceClick(workspace!)}
+                className="w-full rounded-lg border border-neutral-300/60 p-3 dark:border-lightGray/10 "
+              >
                 <span>{workspace?.name}</span>
               </div>
             </Link>

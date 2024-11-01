@@ -1,6 +1,7 @@
 "use client";
 import DialogProvider from "@/components/dialogs/dialog-provider";
 import GlobalKeybindProvider from "@/components/editor/GlobalKeybindProvider";
+import { nodes, theme } from "@/components/editor/theme";
 import {
   InitialConfigType,
   LexicalComposer,
@@ -14,8 +15,6 @@ import {
   useState,
 } from "react";
 import AppContextProvider from "./context";
-import { nodes, theme } from "@/components/editor/theme";
-import { UserProvider } from "./user-provider";
 
 export const editorConfig: InitialConfigType = {
   namespace: "editor",
@@ -46,15 +45,15 @@ const Providers = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState(editorConfig);
   return (
     <AppContextProvider>
-      <UserProvider>
-        <LexicalConfigContext.Provider value={{ config, setConfig: setConfig }}>
-          <LexicalComposer initialConfig={{ ...editorConfig }}>
-            <GlobalKeybindProvider>
-              <DialogProvider>{children}</DialogProvider>
-            </GlobalKeybindProvider>
-          </LexicalComposer>
-        </LexicalConfigContext.Provider>
-      </UserProvider>
+      {/* <UserProvider> */}
+      <LexicalConfigContext.Provider value={{ config, setConfig: setConfig }}>
+        <LexicalComposer initialConfig={{ ...editorConfig }}>
+          <GlobalKeybindProvider>
+            <DialogProvider>{children}</DialogProvider>
+          </GlobalKeybindProvider>
+        </LexicalComposer>
+      </LexicalConfigContext.Provider>
+      {/* </UserProvider> */}
     </AppContextProvider>
   );
 };

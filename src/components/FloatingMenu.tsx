@@ -7,7 +7,6 @@ import {
   useSelectedDocuments,
 } from "@/lib/context";
 import { createDocument } from "@/lib/db/documents";
-import { useUser } from "@/lib/user-provider";
 import { getArticleDataByURL } from "@/lib/utils";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -38,12 +37,13 @@ import {
   SelectedDocumentsMenuFace,
 } from "./FloatingMenuFaces";
 import { DefaultMenuSlide, DocumentMenuSlide } from "./FloatingMenuSlides";
+import { useSession } from "next-auth/react";
 
 const FloatingMenu = memo(() => {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const ref = useClickOutside(() => setIsExpanded(false));
-  const { user } = useUser();
+  const { data: user } = useSession();
   const uniqueId = useId();
   const params = useParams() as { workspace: string };
   const { selectedDocuments, setSelectedDocuments } = useSelectedDocuments();
@@ -68,7 +68,7 @@ const FloatingMenu = memo(() => {
         console.log({ user });
         const workspace = await getActiveWorkspace();
         const { data, error } = await createDocument({
-          user: user?.id!,
+          user: user?.user?.id!,
           workspaceId: workspace?.id!,
         });
         if (error) {

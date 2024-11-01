@@ -1,21 +1,20 @@
 "use client";
+import { setActiveWorkspace } from "@/lib/actions";
 import { instance } from "@/lib/axios";
 import { NewWorkspace, Workspace } from "@/lib/db/schema";
-import { useUser } from "@/lib/user-provider";
+import { queryClient } from "@/lib/session-provider";
 import { capitalizeFirstLetter, getSlug } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { setActiveWorkspace } from "@/lib/actions";
-import { Loader } from "lucide-react";
-import { queryClient } from "@/lib/session-provider";
+import { useSession } from "next-auth/react";
 
 const NewWorkspaceSchema = z.object({
   name: z.string().min(6).max(30),
@@ -23,12 +22,12 @@ const NewWorkspaceSchema = z.object({
 
 const CreateWorkspace = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const { data: user } = useSession();
   console.log({ user });
   const workspaceName =
-    user?.name &&
+    user?.user?.name &&
     `${capitalizeFirstLetter(
-      user!?.name?.split(" ")[0]! as string
+      user?.user?.name?.split(" ")[0]! as string
     )}'s Personal Workspace`;
 
   const {
@@ -55,7 +54,7 @@ const CreateWorkspace = () => {
       toast.error("Failed to create workspace");
       return;
     }
-    await queryClient.refetchQueries(["get-workspaces", user?.id!]);
+    await queryClient.refetchQueries(["get-workspaces", user?.user?.id!]);
     setActiveWorkspace(res?.data?.data as Workspace);
     router.push(`/w/${res?.data?.data?.id}`);
   });

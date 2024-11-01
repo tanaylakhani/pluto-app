@@ -8,10 +8,10 @@ import React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Skeleton } from "./ui/skeleton";
+import { setActiveWorkspace } from "@/lib/actions";
 
 const WorkspaceSwitcher = () => {
   const router = useRouter();
-  // const { workspace } = useParams() as { workspace: string };
   const [show, setShow] = React.useState(false);
   const { workspaces, isLoading, currentWorkspace } = useWorkspaces();
   if (isLoading)
@@ -19,7 +19,7 @@ const WorkspaceSwitcher = () => {
       <Skeleton className="h-10 w-32 animate-pulse rounded-lg bg-neutral-200/60 dark:bg-lightGray/10" />
     );
   const handleWorkspaceClick = (workspace: Workspace) => {
-    setCookie("active-workspace", JSON.stringify(workspace));
+    setActiveWorkspace(workspace);
     router.replace(`/${workspace?.id}`);
   };
   return (

@@ -1,12 +1,12 @@
-import { getUserFromCookies } from "@/lib/actions";
+import { getServerAuthSession } from "@/lib/auth";
 import { createCollection } from "@/lib/db/collections";
 import { db } from "@/lib/db/drizzle";
-import { Collection, collections, documents } from "@/lib/db/schema";
+import { Collection, collections } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const user = await getUserFromCookies(req);
+  const user = await getServerAuthSession();
   const workspace = req.nextUrl.searchParams?.get("workspace");
   if (user === null || workspace === null) {
     return Response.json(
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { name, tags, documents }: Collection & { documents?: string[] } =
     await req.json();
-  const user = await getUserFromCookies(req);
+  const user = await getServerAuthSession();
   const workspace = req.nextUrl.searchParams?.get("workspace");
 
   const resp = await createCollection({

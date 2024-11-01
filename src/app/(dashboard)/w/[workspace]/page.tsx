@@ -29,6 +29,7 @@ const Page: FC<PageProps> = ({ params }) => {
     ["documents-lists", params?.workspace],
     async () => await fetchDocuments({ workspace: params?.workspace })
   );
+  console.log(data);
 
   return (
     <div className="flex w-full flex-col items-center justify-center px-2 pt-28">

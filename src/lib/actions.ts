@@ -9,7 +9,7 @@ import { getUserWorkspaces } from "./db/workspaces";
 import { getAvatarByUserInitials } from "./utils";
 import { NextRequest } from "next/server";
 
-const key = new TextEncoder().encode(process.env.NEXT_PUBLIC_AUTH_SECRET);
+const key = new TextEncoder().encode("532d15e19a1c159dda7474c6c773ff87");
 const SALT_ROUNDS = 10;
 
 export async function hashPassword(password: string) {
@@ -53,9 +53,7 @@ export const getUserFromCookies = async (req: NextRequest) => {
 };
 
 export async function verifyToken(input: string) {
-  const { payload } = await jwtVerify(input, key, {
-    algorithms: ["HS256"],
-  });
+  const { payload } = await jwtVerify(input, key);
   return payload as SessionData | Workspace;
 }
 
@@ -177,6 +175,7 @@ const getActiveWorkspace = async () => {
 };
 export const setActiveWorkspace = async (payload: Workspace) => {
   const encryptedWorkspace = await signToken(payload);
+  console.log({ payload, encryptedWorkspace });
   setCookie("active-workspace", encryptedWorkspace);
 };
 

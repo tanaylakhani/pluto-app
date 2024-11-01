@@ -13,6 +13,19 @@ export const users = pgTable("users", {
   deletedAt: timestamp("deleted_at"),
 });
 
+export const workspaces = pgTable("workspaces", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  name: text("name").notNull().unique(),
+  slug: text("slug"),
+  image: text("image"),
+  user: uuid("user")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   title: text("title"),
@@ -29,18 +42,7 @@ export const documents = pgTable("documents", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
 });
-export const workspaces = pgTable("workspaces", {
-  id: uuid("id").primaryKey().notNull().defaultRandom(),
-  name: text("name").notNull().unique(),
-  slug: text("slug"),
-  image: text("image"),
-  user: uuid("user")
-    .notNull()
-    .references(() => users.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  deletedAt: timestamp("deleted_at"),
-});
+
 export const collections = pgTable("collections", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   name: text("name"),

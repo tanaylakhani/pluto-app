@@ -1,13 +1,12 @@
-import { SessionData, verifyJWTPayload } from "@/lib/actions";
 import { db } from "@/lib/db/drizzle";
 import { NewWorkspace, workspaces } from "@/lib/db/schema";
+import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {}
+
 export async function POST(req: NextRequest) {
-  const sessionCookie = (await verifyJWTPayload(
-    req?.cookies.get("session")?.value!
-  )) as SessionData;
+  const sessionCookie = await getServerSession();
   const payload = (await req.json()) as NewWorkspace;
   if (!sessionCookie) {
     return Response.json(
